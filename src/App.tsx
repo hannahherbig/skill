@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import CreatableSelect from "react-select/creatable";
 import { rating, rate, ordinal, predictWin, predictDraw } from "openskill";
 import { Rating } from "openskill/dist/types";
-import { v4 as uuid } from "uuid";
 import { flatten, orderBy, range, zipWith } from "lodash";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, CloseButton, Container, Row, Table } from "react-bootstrap";
@@ -10,7 +9,6 @@ import { Button, CloseButton, Container, Row, Table } from "react-bootstrap";
 const STORAGE_KEY = "players";
 
 export type Player = Rating & {
-  id: string;
   name: string;
 };
 
@@ -47,18 +45,18 @@ export default function App() {
   }
 
   function addPlayer(name: string) {
-    const player: Player = { id: uuid(), name, ...rating() };
+    const player: Player = { name, ...rating() };
     setPlayers([...players, player]);
     return player;
   }
 
   function deletePlayer(player: Player) {
-    setPlayers(players.filter((p) => p.id !== player.id));
+    setPlayers(players.filter((p) => p.name !== player.name));
     if (selected.includes(player)) {
       setTeams(
         teams
-          .map((team) => team.filter((p) => p.id !== player.id))
-          .filter((team) => team.length > 0),
+          .map((team) => team.filter((p) => p.name !== player.name))
+          .filter((team) => team.length > 0)
       );
     }
   }
@@ -83,7 +81,7 @@ export default function App() {
                         } else {
                           updateTeam(
                             index,
-                            newValue.map(({ value }) => value),
+                            newValue.map(({ value }) => value)
                           );
                         }
                       }}
@@ -105,7 +103,7 @@ export default function App() {
 
                 <td>{prob && prob.toFixed(5)}</td>
               </tr>
-            ),
+            )
           )}
         </Table>
         {teams.length >= 2 && (
@@ -116,19 +114,19 @@ export default function App() {
 
               zipWith(teams, newTeams, (oldTeam, newTeam) => {
                 zipWith(oldTeam, newTeam, (player, rating) => {
-                  newRatings[player.id] = rating;
+                  newRatings[player.name] = rating;
                 });
               });
               setPlayers(
                 orderBy(
                   players.map((player) =>
-                    player.id in newRatings
-                      ? { ...player, ...newRatings[player.id] }
-                      : player,
+                    player.name in newRatings
+                      ? { ...player, ...newRatings[player.name] }
+                      : player
                   ),
                   [(p) => ordinal(p), "mu", "sigma", "name"],
-                  ["desc", "desc", "asc", "asc"],
-                ),
+                  ["desc", "desc", "asc", "asc"]
+                )
               );
               setTeams([]);
             }}
@@ -150,7 +148,7 @@ export default function App() {
             </tr>
           </thead>
           {players.map((player, index) => (
-            <tr key={player.id}>
+            <tr key={player.name}>
               <td>{index + 1}</td>
               <td>{player.name}</td>
               <td>{ordinal(player).toFixed(3)}</td>
