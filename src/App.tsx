@@ -3,7 +3,7 @@ import CreatableSelect from "react-select/creatable";
 import { rating, rate, ordinal, predictWin, predictDraw } from "openskill";
 import { Rating } from "openskill/dist/types";
 import { v4 as uuid } from "uuid";
-import { flatten, orderBy, zip, zipWith } from "lodash";
+import { flatten, orderBy, range, zipWith } from "lodash";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, CloseButton, Container, Row, Table } from "react-bootstrap";
 
@@ -43,7 +43,7 @@ export default function App() {
       setTeams(
         teams
           .map((team) => team.filter((p) => p.id !== player.id))
-          .filter((team) => team.length > 0),
+          .filter((team) => team.length > 0)
       );
     }
   }
@@ -52,8 +52,11 @@ export default function App() {
     <Container>
       <Row>
         <Table size="sm">
-          {zip([...teams, []], [...predictWin(teams), predictDraw(teams)]).map(
-            ([team, prob], index) => (
+          {zipWith(
+            [...teams, []],
+            [...predictWin(teams), predictDraw(teams)],
+            range(teams.length + 1),
+            (team, prob, index) => (
               <tr key={index}>
                 <td>
                   {team && (
@@ -65,7 +68,7 @@ export default function App() {
                         } else {
                           updateTeam(
                             index,
-                            newValue.map(({ value }) => value),
+                            newValue.map(({ value }) => value)
                           );
                         }
                       }}
@@ -87,7 +90,7 @@ export default function App() {
 
                 <td>{prob && prob.toFixed(5)}</td>
               </tr>
-            ),
+            )
           )}
         </Table>
         {teams.length >= 2 && (
@@ -106,11 +109,11 @@ export default function App() {
                   players.map((player) =>
                     player.id in newRatings
                       ? { ...player, ...newRatings[player.id] }
-                      : player,
+                      : player
                   ),
                   [(p) => ordinal(p), "mu", "sigma", "name"],
-                  ["desc", "desc", "asc", "asc"],
-                ),
+                  ["desc", "desc", "asc", "asc"]
+                )
               );
               setTeams([]);
             }}
