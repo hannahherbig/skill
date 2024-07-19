@@ -65,46 +65,48 @@ export default function App() {
     <Container fluid>
       <Row fluid>
         <Table size="sm">
-          {zipWith(
-            [...teams, []],
-            [...predictWin(teams), predictDraw(teams)],
-            range(teams.length + 1),
-            (team, prob, index) => (
-              <tr key={index}>
-                <td>
-                  {team && (
-                    <CreatableSelect
-                      isMulti
-                      onChange={(newValue) => {
-                        if (newValue.length === 0) {
-                          deleteTeam(index);
-                        } else {
-                          updateTeam(
-                            index,
-                            newValue.map(({ value }) => value)
-                          );
+          <tbody>
+            {zipWith(
+              [...teams, []],
+              [...predictWin(teams), predictDraw(teams)],
+              range(teams.length + 1),
+              (team, prob, index) => (
+                <tr key={index}>
+                  <td>
+                    {team && (
+                      <CreatableSelect
+                        isMulti
+                        onChange={(newValue) => {
+                          if (newValue.length === 0) {
+                            deleteTeam(index);
+                          } else {
+                            updateTeam(
+                              index,
+                              newValue.map(({ value }) => value)
+                            );
+                          }
+                        }}
+                        onCreateOption={(name) => {
+                          const player = addPlayer(name);
+                          updateTeam(index, [...team, player]);
+                        }}
+                        options={players.map((p) => ({
+                          label: p.name,
+                          value: p,
+                        }))}
+                        value={team.map((p) => ({ label: p.name, value: p }))}
+                        isOptionDisabled={(option) =>
+                          selected.includes(option.value)
                         }
-                      }}
-                      onCreateOption={(name) => {
-                        const player = addPlayer(name);
-                        updateTeam(index, [...team, player]);
-                      }}
-                      options={players.map((p) => ({
-                        label: p.name,
-                        value: p,
-                      }))}
-                      value={team.map((p) => ({ label: p.name, value: p }))}
-                      isOptionDisabled={(option) =>
-                        selected.includes(option.value)
-                      }
-                    />
-                  )}
-                </td>
+                      />
+                    )}
+                  </td>
 
-                <td>{prob && prob.toFixed(5)}</td>
-              </tr>
-            )
-          )}
+                  <td>{prob && prob.toFixed(5)}</td>
+                </tr>
+              )
+            )}
+          </tbody>
         </Table>
         {teams.length >= 2 && (
           <Button
@@ -147,18 +149,20 @@ export default function App() {
               <th>delete</th>
             </tr>
           </thead>
-          {players.map((player, index) => (
-            <tr key={player.name}>
-              <td>{index + 1}</td>
-              <td>{player.name}</td>
-              <td>{ordinal(player).toFixed(3)}</td>
-              <td>{player.mu.toFixed(3)}</td>
-              <td>{player.sigma.toFixed(3)}</td>
-              <td>
-                <CloseButton onClick={() => deletePlayer(player)} />
-              </td>
-            </tr>
-          ))}
+          <tbody>
+            {players.map((player, index) => (
+              <tr key={player.name}>
+                <td>{index + 1}</td>
+                <td>{player.name}</td>
+                <td>{ordinal(player).toFixed(3)}</td>
+                <td>{player.mu.toFixed(3)}</td>
+                <td>{player.sigma.toFixed(3)}</td>
+                <td>
+                  <CloseButton onClick={() => deletePlayer(player)} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
         </Table>
       </Row>
     </Container>
