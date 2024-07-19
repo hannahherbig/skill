@@ -64,8 +64,8 @@ export default function App() {
   }
 
   return (
-    <Container>
-      <Row>
+    <Container fluid>
+      <Row fluid>
         <Table size="sm">
           {zipWith(
             [...teams, []],
@@ -137,7 +137,7 @@ export default function App() {
           </Button>
         )}
       </Row>
-      <Row>
+      <Row fluid>
         <Table size="sm">
           <thead>
             <tr>
