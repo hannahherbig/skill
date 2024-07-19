@@ -14,11 +14,17 @@ export type Player = Rating & {
   name: string;
 };
 
-const data = localStorage.getItem(STORAGE_KEY);
-const initialPlayers = data ? JSON.parse(data) : [];
+function getInitialPlayers() {
+  const data = localStorage.getItem(STORAGE_KEY);
+  if (data) {
+    return JSON.parse(data);
+  } else {
+    return [];
+  }
+}
 
 export default function App() {
-  const [players, setPlayers] = useState<Player[]>(initialPlayers);
+  const [players, setPlayers] = useState<Player[]>(getInitialPlayers);
   const [teams, setTeams] = useState<Player[][]>([]);
   const selected = flatten(teams);
 
