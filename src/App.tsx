@@ -14,7 +14,7 @@ export type Player = Rating & {
   name: string;
 };
 
-function getInitialPlayers() {
+function getInitialPlayers(): Player[] {
   const data = localStorage.getItem(STORAGE_KEY);
   if (data) {
     return JSON.parse(data);
